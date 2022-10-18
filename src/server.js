@@ -2,6 +2,8 @@ require("express-async-errors"); //importação da biblioteca que lida com erros
 const migrationsRun = require("./database/sqlite/migrations") //importando o banco de dados
 const AppError = require("./utils/AppError") //vamos precisar desse AppError aqui nesse arquivo
 const express = require("express") //Putting all the features that are in the express folder inside the express constant
+const uploadConfig = require("./configs/uploads") //vamos importar esse arquivo para usar o caminho da pasta que fica os arquivos
+const cors = require("cors") //importando o cors - conecta front e backend
 
 //const usersRoutes = require("./routes/users.rotes") //aqui estamos exportando do arquivo 'users.rotes' a rota  (usersRoutes) para ela ser exposta aqui ao server
 const routes = require("./routes")//colocamos todas as rotas em um arquivo index para simplificar, colocando apenas routes no caminho em require, pois por padrão se não especificamos o arquivo será carregado o arquivo index
@@ -9,8 +11,11 @@ const routes = require("./routes")//colocamos todas as rotas em um arquivo index
 migrationsRun(); //executando o banco de dados
 
 const app = express(); //initializing express to be able to use express
+app.use(cors()) //inicializando o cors
 
 app.use(express.json()) //estamos dizendo para a aplicação que as requisições do body no POST vão ser do tipo object Json
+
+app.use("/files", express.static(uploadConfig.UPLOADS_FOLDER)) //vamos usar um método do express chamado static para servir arquivos estáticos - vamos mostrar o file dentro de UPLOADS_FOLDER (para onde os arquivos salvos vão)
 
 app.use(routes); //expondo as rotas - aplicação vai usar essas rotas
 
